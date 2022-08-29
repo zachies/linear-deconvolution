@@ -29,15 +29,15 @@ def psf_gaussian(dim: tuple, s1: float = 0, s2: float = 0, i: int = 0, j: int = 
     # create matrix of zeros
     p = np.zeros(dim)
 
-    # set intensity at center of PSF to 1
-    p[i, j] = 1
-
     # apply blur
     for x in range(0, dim[0]):
         for y in range(0, dim[1]):
-            p[i, j] = math.exp(-0.5 * ((x - i)/s1)**2 - 0.5 * ((y - j)/s2)**2)
+            p[x, y] = math.exp(-0.5 * ((x - i)/s1)**2 - 0.5 * ((y - j)/s2)**2)
 
     # normalize p values to [0, 1]
     p = p / np.linalg.norm(p)
 
     return p
+
+if __name__ == '__main__':
+    psf_gaussian((16, 16), 0.2, 0.2, 7, 7)
