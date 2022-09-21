@@ -30,3 +30,29 @@ def test_psf_gaussian_valid():
 
     # assert
     assert isinstance(psf, (np.ndarray))
+
+def test_add_noise_zero():
+    # arrange
+    mat = np.zeros((32, 32))
+
+    # act
+    noise = add_noise(mat, 0)
+
+    # assert
+    # - check for new instance
+    assert mat is not noise
+    # - check that matrix is the same
+    assert np.linalg.norm(mat) == np.linalg.norm(noise)
+
+def test_add_noise_valid():
+    # arrange
+    mat = np.zeros((32, 32))
+
+    # act
+    noise = add_noise(mat, 1)
+
+    # assert
+    # - check for new instance
+    assert mat is not noise
+    # - check that matrix is different
+    assert np.linalg.norm(mat) != np.linalg.norm(noise)
