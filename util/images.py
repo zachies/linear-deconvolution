@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 from util.borders import undo
+from skimage import img_as_float
 
 def im_float_to_bmp(mat):
     '''
@@ -13,8 +14,7 @@ def load_img(path):
     '''
         Returns a matrix from a given image
     '''
-    mat = np.asarray(Image.open(path))
-    return mat / 255
+    return img_as_float(np.asarray(Image.open(path)))
 
 def save_img(mat, path, kern_size = None):
     '''
@@ -28,7 +28,8 @@ def save_img_raw(mat, path):
     '''
         Saves an image to the specified path. Assumes no undoing of boundary conditions.
     '''
-    Image.fromarray(im_float_to_bmp(mat)).save(path)
+    norm = (mat - np.min(mat)) / (np.max(mat) - np.min(mat))
+    Image.fromarray(im_float_to_bmp(norm)).save(path)
 
 def pad_psf(mat, shape):
     '''
