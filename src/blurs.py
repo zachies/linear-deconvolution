@@ -55,12 +55,12 @@ def linear(dimensions: tuple, radius: float = 0, angle: float = 0, **kwargs) -> 
 
     for r in range(0, math.floor(radius)):
         px = math.floor(r * math.cos(angle) + i) % p.shape[0]
-        py = math.floor(-r * math.sin(angle) + j) % p.shape[1]
+        py = math.floor(r * math.sin(angle) + j) % p.shape[1]
         p[py, px] = 1
     
     p = p / np.sum(p)
 
-    return np.real(fft2(fftshift(p)))
+    return fft2(fftshift(p))
 
 def noise(mat: np.ndarray, noise: float) -> np.ndarray:
     '''
