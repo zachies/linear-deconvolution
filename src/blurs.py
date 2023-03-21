@@ -18,19 +18,22 @@ def gaussian(dimensions: tuple, s1: float = 0, s2: float = 0, **kwargs) -> np.nd
         Normalized real components of the point spread function in FFT space.
     '''
 
-    # mat = np.zeros(dimensions)
-    # for x in range(0, dimensions[0]):
-    #     for y in range(0, dimensions[1]):
-    #         mat[x, y] = math.exp(-0.5 * (x/s1)**2 - 0.5 * (y/s2)**2)
-    # mat = mat / np.sum(mat)
-    # return np.real(fft2(fftshift(mat)))
+    i = math.floor(dimensions[0] / 2)
+    j = math.floor(dimensions[1] / 2)
 
-    n = dimensions[0]
-    width = s1
-    x,y = np.mgrid[:n,:n]
-    g = (x-n/2)**2 + (y-n/2)**2 < width**2
-    g = g/np.sum(g)
-    return fft2(fftshift(g)).real
+    mat = np.zeros(dimensions)
+    for x in range(0, dimensions[0]):
+        for y in range(0, dimensions[1]):
+            mat[x, y] = math.exp(-0.5 * ((x - i)/s1)**2 - 0.5 * ((y - j)/s2)**2)
+    mat = mat / np.sum(mat)
+    return np.real(fft2(fftshift(mat)))
+
+    # n = dimensions[0]
+    # width = s1
+    # x,y = np.mgrid[:n,:n]
+    # g = (x-n/2)**2 + (y-n/2)**2 < width**2
+    # g = g/np.sum(g)
+    # return fft2(fftshift(g)).real
 
 def linear(dimensions: tuple, radius: float = 0, angle: float = 0, **kwargs) -> np.ndarray:
     '''
@@ -59,6 +62,32 @@ def linear(dimensions: tuple, radius: float = 0, angle: float = 0, **kwargs) -> 
         p[py, px] = 1
     
     p = p / np.sum(p)
+
+    return fft2(fftshift(p))
+
+def radial(dim: tuple, radius: float) -> np.ndarray:
+    '''
+    Returns a point source function blurred with a radial blur. 
+    Parameters:
+        dim (tuple): dimensions of the image to produce, ex. (3, 3)
+        radius (float): radius of blur in pixels
+    Returns:
+        Normalized matrix for radial blur.
+    '''
+
+    # create matrix of zeros
+    p = np.zeros(dim)
+
+    # set intensity at center of image to 1
+    i = math.ceil(p.shape[0] / 2)
+    j = math.ceil(p.shape[1] / 2)
+    p[i, j] = 1
+
+    # use Moffat blur where rho = 0
+    for x in range(0, dim[0]):
+        for y in range(0, dim[1]):
+            if (x - i)**2 + (y - j)**2 <= radius**2:
+                p[x, y] = 1
 
     return fft2(fftshift(p))
 
